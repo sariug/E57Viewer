@@ -1,6 +1,7 @@
 set(E57Viewer_SRC
     main.cpp
     e57Viewer.cpp
+    e57Scan.cpp
     )
 
 PREPEND(E57Viewer_SRC)

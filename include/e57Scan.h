@@ -1,8 +1,10 @@
 #include <vector>
 #include <iostream>
 #include <memory>
-#include <E57SimpleData.h>
 class e57Scan
 {
-
+    public:
+    e57Scan();
+    
+    void load();
 };

@@ -1,5 +1,5 @@
 #include "../include/e57Viewer.h"
-
+#include "../include/e57Scan.h"
 #include <iostream>
 static void glfw_error_callback(int error, const char *description)
 {
@@ -76,6 +76,8 @@ void e57Viewer::run()
         ImGui::ShowDemoWindow(&show_demo_window);
         if (ImGui::Button("Import"))
         {
+            e57Scan s;
+            s.load();
         }
         // Rendering
         ImGui::Render();

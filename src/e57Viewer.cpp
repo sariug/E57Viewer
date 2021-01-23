@@ -1,5 +1,4 @@
 #include "../include/e57Viewer.h"
-#include "../include/e57Scan.h"
 #include <iostream>
 static void glfw_error_callback(int error, const char *description)
 {
@@ -10,7 +9,10 @@ e57Viewer::e57Viewer()
 {
     init();
 }
-
+e57Viewer::~e57Viewer()
+{
+    prepareShutdown();
+}
 int e57Viewer::init()
 {
     // Setup window
@@ -48,11 +50,13 @@ int e57Viewer::init()
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    //ImGui::StyleColorsClassic();
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
+
+    // Init scan manager
+    m_manager = std::make_unique<ScanManager>();
 }
 
 void e57Viewer::run()
@@ -76,8 +80,7 @@ void e57Viewer::run()
         ImGui::ShowDemoWindow(&show_demo_window);
         if (ImGui::Button("Import"))
         {
-            e57Scan s;
-            s.load();
+            m_manager->addScan("myscan.e57");
         }
         // Rendering
         ImGui::Render();

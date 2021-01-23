@@ -1,6 +1,7 @@
 set(E57Viewer_INC
     e57Viewer.h
     e57Scan.h
+    ScanManager.h
     )
 
 PREPEND(E57Viewer_INC)

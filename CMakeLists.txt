@@ -37,6 +37,7 @@ endif(NOT OpenGL_FOUND)
 
 
 add_subdirectory( extern/imgui )
+add_subdirectory( extern/libE57Format )
 add_subdirectory( include )
 add_subdirectory( src )
 
@@ -54,6 +55,6 @@ target_include_directories(e57viewer PUBLIC
  #  ${E57Viewer_BINARY_DIR}/include
    )
 
-target_link_libraries(e57viewer imgui glfw ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
+target_link_libraries(e57viewer imgui E57Format glfw ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
 
 # Install Stuff

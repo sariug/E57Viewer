@@ -4,12 +4,13 @@ e57Scan::e57Scan()
 {
     std::cout << "Initiated the scan-\n";
 }
-
+const std::string &e57Scan::getFilePath() const { return filePath; }
 int e57Scan::load(const std::string &filename)
-{
+{       
+    filePath = filename;
     // try
     // {
-    std::unique_ptr<e57::Reader> eReader = std::make_unique<e57::Reader>("pumpARowColumnIndex.e57");
+    std::unique_ptr<e57::Reader> eReader = std::make_unique<e57::Reader>(filename);
 
     if (!eReader->IsOpen())
         return 1;

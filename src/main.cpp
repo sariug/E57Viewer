@@ -1,10 +1,11 @@
 #include "../include/e57Viewer.h"
 
-
-int main(int, char**)
+int main(int, char **)
 {
 
-    std::unique_ptr<e57Viewer> viewer(new e57Viewer);
-    viewer->run();
+    auto &viewer = e57Viewer::instance();
+    viewer.run();
+    viewer.prepareShutdown();
+
     return 0;
 }

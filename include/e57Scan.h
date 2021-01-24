@@ -27,12 +27,13 @@ struct ScanData
 
 class e57Scan
 {
+    std::string filePath;
     e57::E57Root fileTopHeader;
     std::vector<ScanData> scans;
 
 public:
     e57Scan();
-
+    const std::string& getFilePath() const;
     int load(const std::string &filename);
     const e57::E57Root &getTopHeader() const { return fileTopHeader; };
     const std::vector<ScanData> &getScans() const { return scans; };

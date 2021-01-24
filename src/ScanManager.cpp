@@ -31,11 +31,18 @@ void ScanManager::showScanInfo() const
             ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, cell_bg_color);
         }
     };
+    int imguiCount = 0;
+    auto getNameImgui = [&](const std::string &colName) -> const char * {
+        imguiCount++;
+        std::cout<<std::string(colName  + std::to_string(imguiCount)).c_str() << std::endl;
+        return colName.c_str();
+    };
     for (auto &s : m_scans)
     {
-        if (ImGui::TreeNode("Top Level Header"))
+        std::string name = s->getFilePath()+" "+s->getTopHeader().guid+":Top Level Header";
+        if (ImGui::TreeNode(name.c_str()))
         {
-            if (ImGui::BeginTable("##table2", 2, ImGuiTableColumnFlags_WidthStretch))
+            if (ImGui::BeginTable(getNameImgui("##table"), 2, ImGuiTableColumnFlags_WidthStretch))
             {
 
                 auto &th = s->getTopHeader();
@@ -56,9 +63,11 @@ void ScanManager::showScanInfo() const
         {
 
             auto &header = sh.header;
-            if (ImGui::TreeNode(header.name.c_str()))
+            std::string name = header.name+" "+s->getTopHeader().guid+":Scan Header";
+
+            if (ImGui::TreeNode(name.c_str()))
             {
-                if (ImGui::BeginTable("##table3", 2, ImGuiTableColumnFlags_WidthStretch))
+                if (ImGui::BeginTable(getNameImgui("##table"), 2, ImGuiTableColumnFlags_WidthStretch))
                 {
                     writeToTable("Name", header.name);
                     writeToTable("GUID", header.guid);
@@ -109,9 +118,9 @@ void ScanManager::showScanInfo() const
                 }
 
                 ImGui::EndTable();
-                if (ImGui::TreeNode("Available Fields"))
+                if (ImGui::TreeNode(getNameImgui("Available Fields")))
                 {
-                    if (ImGui::BeginTable("##table4", 2, ImGuiTableColumnFlags_WidthStretch))
+                    if (ImGui::BeginTable(getNameImgui("##table4"), 2, ImGuiTableColumnFlags_WidthStretch))
                     {
                         const auto &fields = header.pointFields;
                         const std::string yes = "yes", no = "no";
@@ -165,15 +174,19 @@ void ScanManager::showScanInfo() const
 bool ScanManager::LoadTextureFromFile(const char *filename, GLuint *out_texture, int *out_width, int *out_height)
 {
     // Load from file
-    int image_width = 16;
-    int image_height = 16;
-    unsigned char *image_data = new unsigned char[image_width*image_height*4];//stbi_load(filename, &image_width, &image_height, NULL, 4);
-    for(int i = 0 ;i<image_width;i++)
-        for(int j = 0;j<image_height;j++)
+    int image_width = 512;
+    int image_height = 512;
+    unsigned char *image_data = new unsigned char[image_width * image_height * 4]; //stbi_load(filename, &image_width, &image_height, NULL, 4);
+    int c = 0;
+    for (int i = 0; i < image_width; i++)
+        for (int j = 0; j < image_height; j++)
         {
-        
-        image_data[j*image_width+i] =j;
-         std::cout<<i<<               image_data[j*image_width+i] <<std::endl;
+
+            image_data[c++] = j / 2;
+            image_data[c++] = j / 2;
+            image_data[c++] = j / 2;
+            image_data[c++] = 255;
+            std::cout << i << image_data[j * image_width + i] << std::endl;
         }
     if (image_data == NULL)
         return false;
@@ -194,7 +207,7 @@ bool ScanManager::LoadTextureFromFile(const char *filename, GLuint *out_texture,
     glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 #endif
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
-    delete[]image_data;
+    delete[] image_data;
 
     *out_texture = image_texture;
     *out_width = image_width;

@@ -4,14 +4,22 @@ static void glfw_error_callback(int error, const char *description)
 {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
+void drop_callback(GLFWwindow *window, int count, const char **paths)
+{
+    int i;
+    for (i = 0; i < count; i++)
+        e57Viewer::instance().importScan(paths[i]);
+}
+
+e57Viewer &e57Viewer::instance()
+{
+    static const std::unique_ptr<e57Viewer> instance{new e57Viewer{}};
+    return *instance;
+}
 
 e57Viewer::e57Viewer()
 {
     init();
-}
-e57Viewer::~e57Viewer()
-{
-    prepareShutdown();
 }
 int e57Viewer::init()
 {
@@ -32,7 +40,7 @@ int e57Viewer::init()
         return 1;
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable vsync
-
+    glfwSetDropCallback(window, drop_callback);
     bool err = glewInit() != GLEW_OK;
     if (err)
     {
@@ -61,9 +69,6 @@ int e57Viewer::init()
 
 void e57Viewer::run()
 {
-    // Our state
-    bool show_demo_window = true;
-    bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     // Main loop
@@ -76,13 +81,7 @@ void e57Viewer::run()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        //if (show_demo_window)
-        ImGui::ShowDemoWindow(&show_demo_window);
-        if (ImGui::Button("Import"))
-        {
-            m_manager->addScan("myscan.e57");
-        }
-                m_manager->showScanInfo();
+        m_manager->showScanInfo();
 
         //if (ImGui::Button("Show image"))
         {
@@ -101,6 +100,13 @@ void e57Viewer::run()
         glfwSwapBuffers(window);
     }
 }
+
+void e57Viewer::importScan(std::string filename)
+{
+    std::cout << filename << std::endl;
+    m_manager->addScan(filename);
+}
+
 void e57Viewer::prepareShutdown()
 {
 

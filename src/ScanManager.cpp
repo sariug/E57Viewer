@@ -165,9 +165,16 @@ void ScanManager::showScanInfo() const
 bool ScanManager::LoadTextureFromFile(const char *filename, GLuint *out_texture, int *out_width, int *out_height)
 {
     // Load from file
-    int image_width = 0;
-    int image_height = 0;
-    unsigned char *image_data = stbi_load(filename, &image_width, &image_height, NULL, 4);
+    int image_width = 16;
+    int image_height = 16;
+    unsigned char *image_data = new unsigned char[image_width*image_height*4];//stbi_load(filename, &image_width, &image_height, NULL, 4);
+    for(int i = 0 ;i<image_width;i++)
+        for(int j = 0;j<image_height;j++)
+        {
+        
+        image_data[j*image_width+i] =j;
+         std::cout<<i<<               image_data[j*image_width+i] <<std::endl;
+        }
     if (image_data == NULL)
         return false;
 
@@ -187,7 +194,7 @@ bool ScanManager::LoadTextureFromFile(const char *filename, GLuint *out_texture,
     glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 #endif
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
-    stbi_image_free(image_data);
+    delete[]image_data;
 
     *out_texture = image_texture;
     *out_width = image_width;

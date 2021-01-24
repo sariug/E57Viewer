@@ -82,6 +82,8 @@ void e57Viewer::run()
         {
             m_manager->addScan("myscan.e57");
         }
+        m_manager->showScanInfo();
+
         // Rendering
         ImGui::Render();
         int display_w, display_h;

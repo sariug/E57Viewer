@@ -3,12 +3,21 @@
 #include <memory>
 #include <string>
 #include "E57SimpleReader.h"
+
+struct scanData{
+    std::int64_t nCol, nRow, nTotalPoints, nGroupSize, nPointsPerGroup;
+    bool colIndex = true;
+    e57::Data3DPointsData data;
+    e57::Data3D header;
+
+};
+
 class e57Scan
 {
     e57::E57Root fileTopHeader;
-    std::vector<e57::Data3D> dataBlockHeaders; 
+    std::vector<scanData> scans; 
 public:
     e57Scan();
 
-    void load(const std::string &filename);
+    int load(const std::string &filename);
 };

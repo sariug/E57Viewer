@@ -6,4 +6,8 @@ class ScanManager
 public:
     ScanManager();
     int addScan(const std::string& filename);
+    void showScanInfo() const
+    {
+        
+    }
 };

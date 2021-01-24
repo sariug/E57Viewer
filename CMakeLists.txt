@@ -48,9 +48,9 @@ add_executable(e57viewer  ${E57Viewer_SRC} ${E57Viewer_INC} )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib")
-message(${E57Viewer_SOURCE_DIR}/extern/*)
 target_include_directories(e57viewer PUBLIC
    # headers  to include when building from source
+      ${E57Viewer_SOURCE_DIR}/extern/stb
    ${E57Viewer_SOURCE_DIR}/extern/imgui
  #  ${E57Viewer_BINARY_DIR}/include
    )

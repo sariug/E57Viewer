@@ -82,7 +82,12 @@ void e57Viewer::run()
         {
             m_manager->addScan("myscan.e57");
         }
-        m_manager->showScanInfo();
+                m_manager->showScanInfo();
+
+        //if (ImGui::Button("Show image"))
+        {
+            m_manager->showImage();
+        }
 
         // Rendering
         ImGui::Render();

@@ -1,3 +1,6 @@
 [submodule "extern/libE57Format"]
 	path = extern/libE57Format
 	url = git@github.com:asmaloney/libE57Format.git
+[submodule "extern/stb"]
+	path = extern/stb
+	url = https://github.com/nothings/stb

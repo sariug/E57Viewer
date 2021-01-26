@@ -12,7 +12,7 @@ class ScanManager
 
 public:
     ScanManager();
-    int addScan(const std::string &filename);
+    int addScanFile(const std::string &filename);
     void showScanInfo() const;
     bool LoadTextureFromFile(const char *filename, GLuint *out_texture, int *out_width, int *out_height);
     void showImage()
@@ -21,7 +21,6 @@ public:
         {
             bool ret = LoadTextureFromFile("MyImage01.jpeg", &my_image_texture, &my_image_width, &my_image_height);
             IM_ASSERT(ret);
-            std::cout<<"t"<<std::endl;
         }
         ImGui::Begin("OpenGL Texture Text");
         ImGui::Text("pointer = %p", my_image_texture);

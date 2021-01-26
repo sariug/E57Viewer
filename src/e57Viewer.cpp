@@ -104,7 +104,7 @@ void e57Viewer::run()
 void e57Viewer::importScan(std::string filename)
 {
     std::cout << filename << std::endl;
-    m_manager->addScan(filename);
+    m_manager->addScanFile(filename);
 }
 
 void e57Viewer::prepareShutdown()

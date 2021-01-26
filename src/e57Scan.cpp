@@ -1,23 +1,22 @@
 #include "../include/e57Scan.h"
-
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb_image_write.h>
 e57Scan::e57Scan()
 {
     std::cout << "Initiated the scan-\n";
 }
 const std::string &e57Scan::getFilePath() const { return filePath; }
 int e57Scan::load(const std::string &filename)
-{       
+{
     filePath = filename;
-    // try
-    // {
+    try
+    {
     std::unique_ptr<e57::Reader> eReader = std::make_unique<e57::Reader>(filename);
 
     if (!eReader->IsOpen())
         return 1;
 
     eReader->GetE57Root(fileTopHeader);
-
-    std::cout << fileTopHeader.coordinateMetadata << std::endl;
 
     scans.resize(eReader->GetData3DCount());
     for (auto scanIdx = 0; scanIdx < scans.size(); scanIdx++)
@@ -119,11 +118,31 @@ int e57Scan::load(const std::string &filename)
             }
         }
     }
+    images.resize(eReader->GetImage2DCount());
+    for (auto imageIdx = 0; imageIdx < images.size(); imageIdx++)
+    {
+        ImageData &image = images[imageIdx];
+        eReader->ReadImage2D(imageIdx, image.header);
 
+        eReader->GetImage2DSizes(image.index, image.imageProjection, image.imageType,
+                                 image.nImageWidth, image.nImageHeight, image.nImagesSize, image.imageMaskType, image.imageVisualType);
+
+        std::cout <<  image.imageProjection<<" "<< image.imageType<< " "<< image.nImageWidth <<" "<<image.nImageHeight<<" "<<image.nImagesSize<<images[imageIdx].header.associatedData3DGuid << std::endl;
+
+        image.data.reserve(image.nImagesSize);
+        
+        
+std::cout<<        eReader->ReadImage2DData(imageIdx, image.imageProjection, image.imageType,image.data.data(), 0, image.nImagesSize)<<std::endl;
+
+             stbi_write_jpg("sky2.jpg", image.nImageWidth, image.nImageHeight, 4, image.data.data(),  50);
+      //  break;
+    }
     eReader->Close();
-    // }
-    // catch (const std::exception &e)
-    // {
-    //     std::cerr << e.what() << '\n';
-    // }
+  } catch(e57::E57Exception& ex) {
+                ex.report(__FILE__, __LINE__, __FUNCTION__);
+        } catch (std::exception& ex) {
+               std::cerr << "Got an std::exception, what=" << ex.what() << std::endl;
+        } catch (...) {
+                std::cerr << "Got an unknown exception" << std::endl;
+        }
 }

@@ -1,7 +1,6 @@
 #include "e57Scan.h"
-#include "imgui.h"
 #include <numeric>
-#include <GL/glew.h> 
+
 
 class ScanManager
 {

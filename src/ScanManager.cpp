@@ -171,6 +171,10 @@ void ScanManager::showScanInfo() const
                     
                      ImGui::TreePop();
                     }
+                    ImGui::Checkbox("Show Scan", &(sh.showPointCloud));
+                    if(sh.showPointCloud)
+                        sh.showImage();
+
                 }
             }
             ImGui::TreePop();

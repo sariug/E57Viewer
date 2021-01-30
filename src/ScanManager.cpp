@@ -166,16 +166,20 @@ void ScanManager::showScanInfo() const
                         }
                         ImGui::TreePop();
                     }
-                    if (ImGui::TreeNode(getNameImgui("Images")))
-                    {
-
-                        ImGui::TreePop();
-                    }
                     ImGui::Checkbox("Show Scan", &(sh.showPointCloud));
                     if (sh.showPointCloud)
                     {
-                        sh.showImage();
+                        sh.renderScans();
+                    }
+                    if (sh.images.size() > 0 && ImGui::TreeNode(getNameImgui("Images")))
+                    {
+                        for (int n = 0; n < sh.images.size(); n++)
+                        {
+                            if (ImGui::Checkbox(sh.images[n].header.name.c_str(), &sh.images[n].render))
+                                std::cout << "Rendering " << sh.images[n].header.name << std::endl;
+                        }
 
+                        ImGui::TreePop();
                     }
                 }
             }

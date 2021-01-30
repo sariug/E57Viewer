@@ -1,13 +1,13 @@
 #include "e57Scan.h"
 #include <numeric>
 
-
 class ScanManager
 {
     std::vector<std::shared_ptr<e57Scan>> m_scans;
     int my_image_width = 0;
     int my_image_height = 0;
     GLuint my_image_texture = 0;
+    std::string guidOfImageToShow;
 
 public:
     ScanManager();

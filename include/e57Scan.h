@@ -3,10 +3,12 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <algorithm>
 #include "E57SimpleReader.h"
 #include <GL/glew.h>
 #include "imgui.h"
 
+class ImageData;
 struct ScanPt
 {
     float x = 0.0, y = 0.0, z = 0.0, i = 0.0;
@@ -29,7 +31,7 @@ struct ScanData
     int selectionToShowScanPoint = 0, lastSelectionToShowScanPoints = 0;
 
     e57::Data3D header;
-
+    std::vector<ImageData> images;
     GLuint scanTex;
 
     enum ImageType
@@ -107,7 +109,7 @@ struct ScanData
         std::cout << "imageCreated" << std::endl;
         return true;
     }
-    void showImage()
+    void renderScans()
     {
         ImGui::Combo("Property", &selectionToShowScanPoint, "None\0Color\0Intensity\0InvalidPoints\0");
 
@@ -130,6 +132,7 @@ struct ScanData
 
 struct ImageData
 {
+    bool render = false;
     int index;
     e57::Image2D header;
     e57::Image2DProjection imageProjection; //like E57_SPHERICAL
@@ -147,7 +150,7 @@ class e57Scan
     std::string filePath;
     e57::E57Root fileTopHeader;
     std::vector<ScanData> scans;
-    std::vector<ImageData> images;
+    std::vector<std::shared_ptr<ImageData>> images;
 
 public:
     e57Scan();

@@ -109,27 +109,29 @@ int e57Scan::load(const std::string &filename)
                         pt.r = ((r[i] - limits.colorRedMinimum) * 255) / (limits.colorRedMaximum - limits.colorRedMinimum);
                         pt.g = ((g[i] - limits.colorGreenMinimum) * 255) / (limits.colorGreenMaximum - limits.colorGreenMinimum);
                         pt.b = ((b[i] - limits.colorBlueMinimum) * 255) / (limits.colorBlueMaximum - limits.colorBlueMinimum);
-                      //  std::cout<<r[i]<<pt.r<<pt.z << z[i]<<std::endl;
+                        //  std::cout<<r[i]<<pt.r<<pt.z << z[i]<<std::endl;
                     }
 
                     if (intensityAvailable)
                         pt.i = (intensity[i] - scan.header.intensityLimits.intensityMinimum) / (scan.header.intensityLimits.intensityMaximum - scan.header.intensityLimits.intensityMinimum);
-                       // std::cout<<intensity[i]<<std::endl;
-                    scan.setPt(temp_col,temp_row, pt);
+                    // std::cout<<intensity[i]<<std::endl;
+                    scan.setPt(temp_col, temp_row, pt);
                     count++;
                 }
             }
         }
-        images.resize(eReader->GetImage2DCount());
-        for (auto imageIdx = 0; imageIdx < images.size(); imageIdx++)
+        int imageCount = eReader->GetImage2DCount();
+        for (auto imageIdx = 0; imageIdx < imageCount; imageIdx++)
         {
-            ImageData &image = images[imageIdx];
+            ImageData image;
             eReader->ReadImage2D(imageIdx, image.header);
-            std::cout<<"The image header is captured, rest is ignored."<<std::endl;
-            //         eReader->GetImage2DSizes(image.index, image.imageProjection, image.imageType,
-            //                                  image.nImageWidth, image.nImageHeight, image.nImagesSize, image.imageMaskType, image.imageVisualType);
+            eReader->GetImage2DSizes(image.index, image.imageProjection, image.imageType,
+                                     image.nImageWidth, image.nImageHeight, image.nImagesSize, image.imageMaskType, image.imageVisualType);
 
-            //         std::cout <<  image.imageProjection<<" "<< image.imageType<< " "<< image.nImageWidth <<" "<<image.nImageHeight<<" "<<image.nImagesSize<<images[imageIdx].header.associatedData3DGuid << std::endl;
+            for(auto& s:scans)
+            if(s.header.guid == image.header.associatedData3DGuid)
+                s.images.push_back(image);
+           // std::cout << image.imageProjection << " " << image.imageType << " " << image.nImageWidth << " " << image.nImageHeight << " " << image.nImagesSize << images[imageIdx].header.associatedData3DGuid << std::endl;
 
             //         image.data.reserve(image.nImagesSize);
 

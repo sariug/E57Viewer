@@ -1,6 +1,4 @@
 #include "../include/ScanManager.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
 
 ScanManager::ScanManager()
 {
@@ -175,8 +173,9 @@ void ScanManager::showScanInfo() const
                     {
                         for (int n = 0; n < sh.images.size(); n++)
                         {
-                            if (ImGui::Checkbox(sh.images[n].header.name.c_str(), &sh.images[n].render))
-                                std::cout << "Rendering " << sh.images[n].header.name << std::endl;
+                            ImGui::Checkbox(sh.images[n].header.name.c_str(), &sh.images[n].render);
+                            if (sh.images[n].render)
+                                sh.images[n].display();
                         }
 
                         ImGui::TreePop();
@@ -190,6 +189,7 @@ void ScanManager::showScanInfo() const
 // Simple helper function to load an image into a OpenGL texture with common settings
 bool ScanManager::LoadTextureFromFile(const char *filename, GLuint *out_texture, int *out_width, int *out_height)
 {
+    return false;
     // Load from file
     int image_width = 512;
     int image_height = 512;

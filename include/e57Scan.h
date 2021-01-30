@@ -52,8 +52,10 @@ struct ScanData
         for (int i = 0; i < nRow; i++)
             for (int j = 0; j < nCol; j++)
             {
-                image_data[--c] = 255;
-                const auto pt = getPt(j, i);
+                image_data[--c] = 255; // Alpha
+                // Rotate J. The whole reason of this drama is that
+                // (i,j)=(0,0) of a scan is top left. Texture 0,0 is bottom left. We first rotated all around. But we just needed upside down.
+                const auto pt = getPt(nCol - j - 1, i);
                 float isEmptyPt = (pt.x == 0 && pt.y == 0 && pt.z == 0) ? 0 : pt.i;
                 if (isEmptyPt > 0)
                 {
@@ -133,7 +135,7 @@ struct ScanData
 struct ImageData
 {
     bool render = false;
-    int index;
+    int64_t index;
     e57::Image2D header;
     e57::Image2DProjection imageProjection; //like E57_SPHERICAL
     e57::Image2DType imageType;             //like E57_JPEG_IMAGE
@@ -142,7 +144,32 @@ struct ImageData
     int64_t nImagesSize = 0;          //Number of bytes in the image
     e57::Image2DType imageMaskType;   //like E57_PNG_IMAGE_MASK if present
     e57::Image2DType imageVisualType; //like E57_JPEG_IMAGE if present
-    std::vector<uint8_t> data;
+    unsigned char *data;
+    GLuint imageTex = 0;
+    void display()
+    {
+        if (!imageTex)
+        {
+            std::cout << "imageGenerate" << std::endl;
+            // Create a OpenGL texture identifier
+            glGenTextures(1, &imageTex);
+            glBindTexture(GL_TEXTURE_2D, imageTex);
+
+            // Setup filtering parameters for display
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // This is required on WebGL for non power-of-two textures
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Same
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, nImageWidth, nImageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            
+        }
+        ImGui::Begin("OpenGL Texture Text");
+        ImGui::Text("pointer = %p", imageTex);
+        ImGui::Text("size = %d x %d", nImageWidth, nImageHeight);
+        ImGui::Image((void *)(intptr_t)imageTex, ImVec2(nImageWidth, nImageHeight));
+        ImGui::End();
+    }
 };
 
 class e57Scan

@@ -1,4 +1,6 @@
 #include "../include/e57Scan.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
 e57Scan::e57Scan()
@@ -120,25 +122,38 @@ int e57Scan::load(const std::string &filename)
                 }
             }
         }
-        int imageCount = eReader->GetImage2DCount();
-        for (auto imageIdx = 0; imageIdx < imageCount; imageIdx++)
+        int64_t imageCount = eReader->GetImage2DCount();
+        for (int64_t imageIdx = 0; imageIdx < imageCount; imageIdx++)
         {
             ImageData image;
             eReader->ReadImage2D(imageIdx, image.header);
-            eReader->GetImage2DSizes(image.index, image.imageProjection, image.imageType,
-                                     image.nImageWidth, image.nImageHeight, image.nImagesSize, image.imageMaskType, image.imageVisualType);
+            std::cout << " Image Index:" << imageIdx << "  <-image.nImagesSize" << std::endl;
+            image.index = imageIdx;
+            eReader->GetImage2DSizes(image.index,
+                                     image.imageProjection,
+                                     image.imageType,
+                                     image.nImageWidth,
+                                     image.nImageHeight,
+                                     image.nImagesSize,
+                                     image.imageMaskType,
+                                     image.imageVisualType);
+            std::cout << "image.nImagesSize" << std::endl;
 
-            for(auto& s:scans)
-            if(s.header.guid == image.header.associatedData3DGuid)
-                s.images.push_back(image);
-           // std::cout << image.imageProjection << " " << image.imageType << " " << image.nImageWidth << " " << image.nImageHeight << " " << image.nImagesSize << images[imageIdx].header.associatedData3DGuid << std::endl;
+            std::cout << image.nImagesSize << std::endl;
+            std::cout << image.imageProjection << " BAMBU " << image.imageType << " " << image.nImageWidth << " " << image.nImageHeight << " " << image.nImagesSize << " " << image.imageMaskType << " " << image.imageVisualType << std::endl;
+            for (auto &s : scans)
+                if (s.header.guid == image.header.associatedData3DGuid)
+                    s.images.push_back(image);
 
-            //         image.data.reserve(image.nImagesSize);
-
-            // std::cout<<        eReader->ReadImage2DData(imageIdx, image.imageProjection, image.imageType,image.data.data(), 0, image.nImagesSize)<<std::endl;
-
-            //              stbi_write_jpg("sky2.jpg", image.nImageWidth, image.nImageHeight, 4, image.data.data(),  50);
-            //       //  break;
+            // image.data.reserve(image.nImagesSize);
+            image.data = new unsigned char[image.nImagesSize];
+            std::cout << eReader->ReadImage2DData(imageIdx, image.imageProjection, image.imageType, image.data, 0, image.nImagesSize) << std::endl;
+            int w, h, c;
+            image.data = stbi_load_from_memory(image.data, image.nImagesSize, &w, &h, &c, 4);
+            // std::cout << w << " " << h << " " << c << std::endl;
+            // image.data = std::vector<uint8_t>(buffer, buffer + image.nImagesSize);
+            // image.data.shrink_to_fit();
+            // stbi_write_jpg("file.jpg",w,h,c,image.data.data(),50);
         }
         eReader->Close();
     }

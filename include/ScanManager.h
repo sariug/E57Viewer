@@ -16,6 +16,7 @@ public:
     bool LoadTextureFromFile(const char *filename, GLuint *out_texture, int *out_width, int *out_height);
     void showImage()
     {
+        return;
         if (!my_image_texture)
         {
             bool ret = LoadTextureFromFile("MyImage01.jpeg", &my_image_texture, &my_image_width, &my_image_height);

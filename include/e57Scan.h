@@ -23,61 +23,107 @@ struct ScanData
     }
     ScanPt &getPt(int col, int row)
     {
-        std::cout<<"getting scan Point"<<std::endl;
         return pointCloud.at(col * nRow + row);
     }
     bool showPointCloud = false;
+    int selectionToShowScanPoint = 0, lastSelectionToShowScanPoints = 0;
+
     e57::Data3D header;
 
-    GLuint scanColoredTex;
+    GLuint scanTex;
+
+    enum ImageType
+    {
+        None,
+        Color,
+        Intensity,
+        InvalidPoints
+    };
 
     // Simple helper function to load an image into a OpenGL texture with common settings
-    bool createScanImage()
+    bool createScanImage(ImageType type)
     {
-        unsigned char *image_data = new unsigned char[nCol * nRow * 4]; //stbi_load(filename, &image_width, &image_height, NULL, 4);
-        int c = 0;
-        for (int i = 0; i < nCol; i++)
-            for (int j = 0; j < nRow; j++)
+        if (type == None)
+            return false;
+        uint8_t *image_data = new uint8_t[nCol * nRow * 4]; //stbi_load(filename, &image_width, &image_height, NULL, 4);
+        int c = nCol * nRow * 4;
+        for (int i = 0; i < nRow; i++)
+            for (int j = 0; j < nCol; j++)
             {
-                const auto pt = getPt(i, j);
-                image_data[c++] = pt.i*255;
-                image_data[c++] = pt.i*255;
-                image_data[c++] = pt.i*255;
-                image_data[c++] = 255;
-                if(pt.i>0)
-                std::cout<<image_data[c-3]<<pt.i<<pt.i<<std::endl;
+                image_data[--c] = 255;
+                const auto pt = getPt(j, i);
+                float isEmptyPt = (pt.x == 0 && pt.y == 0 && pt.z == 0) ? 0 : pt.i;
+                if (isEmptyPt > 0)
+                {
+                    switch (type)
+                    {
+                    case ImageType::Intensity:
+                        for (auto _t = 0; _t < 3; _t++)
+                            image_data[--c] = pt.i * 255;
+                        break;
+                    case ImageType::InvalidPoints:
+                        // Black
+                        for (auto _t = 0; _t < 3; _t++)
+                            image_data[--c] = 0;
+                        break;
+                    case ImageType::Color:
+                        image_data[--c] = pt.b;
+                        image_data[--c] = pt.g;
+                        image_data[--c] = pt.r;
+                        break;
+                    }
+                }
+                else
+                {
+                    switch (type)
+                    {
+                    case ImageType::InvalidPoints:
+                        image_data[--c] = 255;
+                        image_data[--c] = 180;
+                        image_data[--c] = 0;
+                        break;
+                    default:
+                        for (auto _t = 0; _t < 3; _t++)
+                            image_data[--c] = 0;
+                    }
+                }
             }
         if (image_data == NULL)
             return false;
-        std::cout<<"imageDataFilled"<<std::endl;
-        std::cout<<nCol<<" "<<nRow<<"\n";
+        std::cout << "imageDataFilled" << std::endl;
         // Create a OpenGL texture identifier
-        glGenTextures(1, &scanColoredTex);
-        glBindTexture(GL_TEXTURE_2D, scanColoredTex);
+        glGenTextures(1, &scanTex);
+        glBindTexture(GL_TEXTURE_2D, scanTex);
 
         // Setup filtering parameters for display
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // This is required on WebGL for non power-of-two textures
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Same
-            std::cout<<"imageCreated"<<std::endl;
+        std::cout << "imageCreated" << std::endl;
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, nCol, nRow, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
         delete[] image_data;
-    std::cout<<"imageCreated"<<std::endl;
+        std::cout << "imageCreated" << std::endl;
         return true;
     }
     void showImage()
     {
-        if (!scanColoredTex)
+        ImGui::Combo("Property", &selectionToShowScanPoint, "None\0Color\0Intensity\0InvalidPoints\0");
+
+        if (lastSelectionToShowScanPoints != selectionToShowScanPoint)
+            scanTex = 0;
+        if (!scanTex)
         {
-            bool ret = createScanImage();
-            IM_ASSERT(ret);
+            lastSelectionToShowScanPoints = selectionToShowScanPoint;
+            bool ret = createScanImage(static_cast<ImageType>(selectionToShowScanPoint));
+            if (!ret)
+                return;
         }
         ImGui::Begin("OpenGL Texture Text");
-        ImGui::Text("pointer = %p", this->scanColoredTex);
+        ImGui::Text("pointer = %p", scanTex);
         ImGui::Text("size = %d x %d", nCol, nRow);
-        ImGui::Image((void *)(intptr_t)scanColoredTex, ImVec2(nCol, nRow));
+        ImGui::Image((void *)(intptr_t)scanTex, ImVec2(nCol, nRow));
         ImGui::End();
     }
 };

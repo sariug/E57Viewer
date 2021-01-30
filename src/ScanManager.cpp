@@ -164,17 +164,19 @@ void ScanManager::showScanInfo() const
                                 ImGui::EndTable();
                             }
                         }
-                     ImGui::TreePop();
+                        ImGui::TreePop();
                     }
                     if (ImGui::TreeNode(getNameImgui("Images")))
                     {
-                    
-                     ImGui::TreePop();
+
+                        ImGui::TreePop();
                     }
                     ImGui::Checkbox("Show Scan", &(sh.showPointCloud));
-                    if(sh.showPointCloud)
+                    if (sh.showPointCloud)
+                    {
                         sh.showImage();
 
+                    }
                 }
             }
             ImGui::TreePop();

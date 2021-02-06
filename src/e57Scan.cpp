@@ -126,9 +126,9 @@ int e57Scan::load(const std::string &filename)
         for (int64_t imageIdx = 0; imageIdx < imageCount; imageIdx++)
         {
             ImageData image;
-            eReader->ReadImage2D(imageIdx, image.header);
-            std::cout << " Image Index:" << imageIdx << "  <-image.nImagesSize" << std::endl;
             image.index = imageIdx;
+            eReader->ReadImage2D(image.index, image.header);
+     //       std::cout << " Image Index:" << imageIdx << "  <-image.nImagesSize" << std::endl;
             eReader->GetImage2DSizes(image.index,
                                      image.imageProjection,
                                      image.imageType,
@@ -137,19 +137,17 @@ int e57Scan::load(const std::string &filename)
                                      image.nImagesSize,
                                      image.imageMaskType,
                                      image.imageVisualType);
-            std::cout << "image.nImagesSize" << std::endl;
 
-            std::cout << image.nImagesSize << std::endl;
-            std::cout << image.imageProjection << " BAMBU " << image.imageType << " " << image.nImageWidth << " " << image.nImageHeight << " " << image.nImagesSize << " " << image.imageMaskType << " " << image.imageVisualType << std::endl;
             for (auto &s : scans)
                 if (s.header.guid == image.header.associatedData3DGuid)
                     s.images.push_back(image);
 
             // image.data.reserve(image.nImagesSize);
             image.data = new unsigned char[image.nImagesSize];
-            std::cout << eReader->ReadImage2DData(imageIdx, image.imageProjection, image.imageType, image.data, 0, image.nImagesSize) << std::endl;
+            std::cout << eReader->ReadImage2DData(image.index, image.imageProjection, image.imageType, image.data, 0, image.nImagesSize) << std::endl;
             int w, h, c;
             image.data = stbi_load_from_memory(image.data, image.nImagesSize, &w, &h, &c, 4);
+       //     std::cout<<image.header.name<<std::endl;
             // std::cout << w << " " << h << " " << c << std::endl;
             // image.data = std::vector<uint8_t>(buffer, buffer + image.nImagesSize);
             // image.data.shrink_to_fit();

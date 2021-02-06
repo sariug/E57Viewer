@@ -148,6 +148,7 @@ struct ImageData
     GLuint imageTex = 0;
     void display()
     {
+        std::cout<<header.name<<std::endl;
         if (!imageTex)
         {
             std::cout << "imageGenerate" << std::endl;

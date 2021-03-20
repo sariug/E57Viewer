@@ -2,7 +2,7 @@
 
 ![Example view](example.jpeg)
 
-A quick E57 reader implementation for inspecting the data and visualizing the structered scans as well as images.
+A quick E57 reader implementation for inspecting the data and visualizing the structered scans as well as images. One can see point colors, intensities and invalid points.
 
 I prepared this small code really quickly to test out some E57 functionality and to understand the file type better. There are possible many bugs. 
 

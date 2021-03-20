@@ -16,7 +16,7 @@ Drag and drop the E57 file. Start inspecting.
 
 
 ## Contributing
-Let me know if you want to add something or thinking that you may use it and a bug is creating problem. I will fix in happily :) 
+Let me know if you want to add something or thinking that you may use it and a bug is creating problem. I will fix it happily :) 
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)

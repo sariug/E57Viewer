@@ -35,7 +35,7 @@ int e57Viewer::init()
     // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     // Create window with graphics context
-    window = glfwCreateWindow(1280, 720, "Empty", NULL, NULL);
+    window = glfwCreateWindow(1280, 720, "e57Viewer", NULL, NULL);
     if (window == NULL)
         return 1;
     glfwMakeContextCurrent(window);

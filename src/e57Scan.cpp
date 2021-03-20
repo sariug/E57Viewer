@@ -144,7 +144,7 @@ int e57Scan::load(const std::string &filename)
 
             // image.data.reserve(image.nImagesSize);
             image.data = new unsigned char[image.nImagesSize];
-            std::cout << eReader->ReadImage2DData(image.index, image.imageProjection, image.imageType, image.data, 0, image.nImagesSize) << std::endl;
+        eReader->ReadImage2DData(image.index, image.imageProjection, image.imageType, image.data, 0, image.nImagesSize) ;
             int w, h, c;
             image.data = stbi_load_from_memory(image.data, image.nImagesSize, &w, &h, &c, 4);
        //     std::cout<<image.header.name<<std::endl;

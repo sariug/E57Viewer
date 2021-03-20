@@ -124,8 +124,7 @@ struct ScanData
             if (!ret)
                 return;
         }
-        ImGui::Begin("OpenGL Texture Text");
-        ImGui::Text("pointer = %p", scanTex);
+        ImGui::Begin("ScanView");
         ImGui::Text("size = %d x %d", nCol, nRow);
         ImGui::Image((void *)(intptr_t)scanTex, ImVec2(nCol, nRow));
         ImGui::End();
@@ -165,8 +164,7 @@ struct ImageData
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, nImageWidth, nImageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
             
         }
-        ImGui::Begin("OpenGL Texture Text");
-        ImGui::Text("pointer = %p", imageTex);
+        ImGui::Begin("Image");
         ImGui::Text("size = %d x %d", nImageWidth, nImageHeight);
         ImGui::Image((void *)(intptr_t)imageTex, ImVec2(nImageWidth, nImageHeight));
         ImGui::End();
